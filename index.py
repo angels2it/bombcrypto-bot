@@ -154,7 +154,8 @@ def clickBtn(img, timeout=3, threshold = ct['default']):
     has_timed_out = False
     while(not has_timed_out):
         matches = positions(img, threshold=threshold)
-
+        #cv2.imwrite('{}.png'.format(imagesKey[imagesValue.index(img)]), img)
+        logger('{} match image: -> {}'.format(imagesKey[imagesValue.index(img)], len(matches)))
         if(len(matches)==0):
             has_timed_out = time.time()-start > timeout
             continue
@@ -162,6 +163,7 @@ def clickBtn(img, timeout=3, threshold = ct['default']):
         x,y,w,h = matches[0]
         pos_click_x = x+w/2
         pos_click_y = y+h/2
+        logger('click to x{} - y{}'.format(pos_click_x, pos_click_y))
         moveToWithRandomness(pos_click_x,pos_click_y,1)
         pyautogui.click()
         return True
@@ -181,6 +183,7 @@ def printSreen():
 def positions(target, threshold=ct['default'],img = None):
     if img is None:
         img = printSreen()
+    cv2.imwrite('screen.png', img)
     result = cv2.matchTemplate(img,target,cv2.TM_CCOEFF_NORMED)
     w = target.shape[1]
     h = target.shape[0]
@@ -463,7 +466,11 @@ def main():
     last_log_is_progress = False
 
     global images
+    global imagesKey
+    global imagesValue
     images = load_images()
+    imagesKey = list(images.keys())
+    imagesValue = list(images.values())
 
     if ch['enable']:
         global home_heroes
